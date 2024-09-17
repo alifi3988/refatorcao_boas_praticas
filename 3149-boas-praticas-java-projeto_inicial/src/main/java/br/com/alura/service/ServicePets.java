@@ -1,6 +1,8 @@
 package br.com.alura.service;
 
-import br.com.alura.client.ClientHttpRequest;
+import br.com.alura.client.ClientHttpConfiguration;
+import br.com.alura.model.Pet;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -15,7 +17,7 @@ import java.util.Scanner;
 
 public class ServicePets {
 
-    private static ClientHttpRequest client;
+    private static ClientHttpConfiguration client;
     private static final int HTTP_RESPONSE_STATUS_ERRO_404 = 404;
     private static final int HTTP_RESPONSE_STATUS_ERRO_400 = 400;
     private static final int HTTP_RESPONSE_STATUS_ERRO_500 = 500;
@@ -75,18 +77,12 @@ public class ServicePets {
             String cor = campos[4];
             Float peso = Float.parseFloat(campos[5]);
 
-            JsonObject json = new JsonObject();
-            json.addProperty("tipo", tipo.toUpperCase());
-            json.addProperty("nome", nome);
-            json.addProperty("raca", raca);
-            json.addProperty("idade", idade);
-            json.addProperty("cor", cor);
-            json.addProperty("peso", peso);
+            Pet pet = new Pet(tipo.toUpperCase(), nome, raca, idade, cor, peso);
 
             HttpResponse<String> response = client.getHttpResponse(
                     "/".concat(idOuNome.concat("/pets")),
                     "POST",
-                    HttpRequest.BodyPublishers.ofString(json.toString()),
+                    HttpRequest.BodyPublishers.ofString(new Gson().toJson(pet)),
                     "application/json");
 
             int statusCode = response.statusCode();
