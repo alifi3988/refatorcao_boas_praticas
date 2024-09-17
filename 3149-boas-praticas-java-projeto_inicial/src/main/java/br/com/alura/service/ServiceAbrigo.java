@@ -1,6 +1,8 @@
 package br.com.alura.service;
 
-import br.com.alura.client.ClientHttpRequest;
+import br.com.alura.client.ClientHttpConfiguration;
+import br.com.alura.model.Abrigo;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -13,7 +15,7 @@ import java.util.Scanner;
 
 public class ServiceAbrigo {
 
-    private static ClientHttpRequest client;
+    private static ClientHttpConfiguration client;
     private static final int HTTP_RESPONSE_STATUS_ERRO_400 = 400;
     private static final int HTTP_RESPONSE_STATUS_ERRO_500 = 500;
     private static final int HTTP_RESPONSE_STATUS_SUCCESS_200 = 200;
@@ -26,15 +28,12 @@ public class ServiceAbrigo {
         System.out.println("Digite o email do abrigo:");
         String email = new Scanner(System.in).nextLine();
 
-        JsonObject json = new JsonObject();
-        json.addProperty("nome", nome);
-        json.addProperty("telefone", telefone);
-        json.addProperty("email", email);
+        Abrigo abrigo = new Abrigo(nome, telefone, email);
 
         HttpResponse<String> response = client.getHttpResponse(
                 "",
                 "POST",
-                HttpRequest.BodyPublishers.ofString(json.toString()),
+                HttpRequest.BodyPublishers.ofString(new Gson().toJson(abrigo)),
                 "application/json");
 
         int statusCode = response.statusCode();
