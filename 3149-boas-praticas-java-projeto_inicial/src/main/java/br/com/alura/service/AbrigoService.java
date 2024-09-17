@@ -2,18 +2,17 @@ package br.com.alura.service;
 
 import br.com.alura.client.ClientHttpConfiguration;
 import br.com.alura.model.Abrigo;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import java.io.IOException;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
-public class ServiceAbrigo {
+public class AbrigoService {
 
     private static ClientHttpConfiguration client;
     private static final int HTTP_RESPONSE_STATUS_ERRO_400 = 400;
@@ -51,13 +50,13 @@ public class ServiceAbrigo {
         HttpResponse<String> response = client.getHttpResponse("", "GET", HttpRequest.BodyPublishers.noBody(), "");
 
         String responseBody = response.body();
-        JsonArray jsonArray = JsonParser.parseString(responseBody).getAsJsonArray();
+        List<Abrigo> resultListAbrigo = Arrays.stream(new ObjectMapper().readValue(responseBody, Abrigo[].class)).toList();
+
         System.out.println("Abrigos cadastrados:");
-        for (JsonElement element : jsonArray) {
-            JsonObject jsonObject = element.getAsJsonObject();
-            long id = jsonObject.get("id").getAsLong();
-            String nome = jsonObject.get("nome").getAsString();
-            System.out.println(id +" - " +nome);
+        for (Abrigo abrigo : resultListAbrigo) {
+            long id = abrigo.getId();
+            String nome = abrigo.getNome();
+            System.out.println(id + " - " + nome);
         }
     }
 }
