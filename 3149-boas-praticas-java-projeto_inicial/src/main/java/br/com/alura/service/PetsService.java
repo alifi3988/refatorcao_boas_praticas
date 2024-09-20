@@ -71,32 +71,32 @@ public class PetsService {
     }
 
     public static boolean listarPetsDoAbrigo() throws IOException, InterruptedException {
-//        System.out.println("Digite o id ou nome do abrigo:");
-//        String idOuNome = new Scanner(System.in).nextLine();
-//
-//        HttpResponse<String> response = getHttpResponse(
-//                "/".concat(idOuNome.concat("/pets")),
-//                "GET",
-//                HttpRequest.BodyPublishers.noBody(),
-//                "");
-//
-//        int statusCode = response.statusCode();
-//        if (statusCode == 404 || statusCode == 500) {
-//            System.out.println("ID ou nome não cadastrado!");
-//            return true;
-//        }
-//        String responseBody = response.body();
-//        JsonArray jsonArray = JsonParser.parseString(responseBody).getAsJsonArray();
-//        System.out.println("Pets cadastrados:");
-//        for (JsonElement element : jsonArray) {
-//            JsonObject jsonObject = element.getAsJsonObject();
-//            long id = jsonObject.get("id").getAsLong();
-//            String tipo = jsonObject.get("tipo").getAsString();
-//            String nome = jsonObject.get("nome").getAsString();
-//            String raca = jsonObject.get("raca").getAsString();
-//            int idade = jsonObject.get("idade").getAsInt();
-//            System.out.println(id +" - " +tipo +" - " +nome +" - " +raca +" - " +idade +" ano(s)");
-//        }
+        System.out.println("Digite o id ou nome do abrigo:");
+        String idOuNome = new Scanner(System.in).nextLine();
+
+        HttpResponse<String> response = HttpRequestClient.getHttRequest(
+                "/".concat(idOuNome.concat("/pets")),
+                "GET",
+                HttpRequest.BodyPublishers.noBody(),
+                "");
+
+        int statusCode = response.statusCode();
+        if (statusCode == 404 || statusCode == 500) {
+            System.out.println("ID ou nome não cadastrado!");
+            return true;
+        }
+        String responseBody = response.body();
+        JsonArray jsonArray = JsonParser.parseString(responseBody).getAsJsonArray();
+        System.out.println("Pets cadastrados:");
+        for (JsonElement element : jsonArray) {
+            JsonObject jsonObject = element.getAsJsonObject();
+            long id = jsonObject.get("id").getAsLong();
+            String tipo = jsonObject.get("tipo").getAsString();
+            String nome = jsonObject.get("nome").getAsString();
+            String raca = jsonObject.get("raca").getAsString();
+            int idade = jsonObject.get("idade").getAsInt();
+            System.out.println(id +" - " +tipo +" - " +nome +" - " +raca +" - " +idade +" ano(s)");
+        }
         return false;
     }
 
