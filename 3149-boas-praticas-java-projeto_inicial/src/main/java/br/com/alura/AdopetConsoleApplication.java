@@ -20,7 +20,7 @@ public class AdopetConsoleApplication {
         System.out.println("##### BOAS VINDAS AO SISTEMA ADOPET CONSOLE #####");
         try {
             int opcaoEscolhida = 0;
-            while (true) {
+            while (opcaoEscolhida != 5) {
                 System.out.println("\nDIGITE O NÚMERO DA OPERAÇÃO DESEJADA:");
                 System.out.println("1 -> Listar abrigos cadastrados");
                 System.out.println("2 -> Cadastrar novo abrigo");
@@ -34,7 +34,7 @@ public class AdopetConsoleApplication {
                 if (opcaoEscolhida == 1) {
                     listarAbrigosCadastrados();
                 } else if (opcaoEscolhida == 2) {
-                    cadastrarNovoAbrigo();
+                    cadastarNovoAbrigo();
                 } else if (opcaoEscolhida == 3) {
                     if (listarPetsDoAbrigo()) continue;
                 } else if (opcaoEscolhida == 4) {
@@ -84,15 +84,12 @@ public class AdopetConsoleApplication {
             json.addProperty("cor", cor);
             json.addProperty("peso", peso);
 
-            HttpClient client = HttpClient.newHttpClient();
-            String uri = "http://localhost:8080/abrigos/" + idOuNome + "/pets";
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(uri))
-                    .header("Content-Type", "application/json")
-                    .method("POST", HttpRequest.BodyPublishers.ofString(json.toString()))
-                    .build();
+            HttpResponse<String> response = getHttpResponse(
+                    "/".concat(idOuNome.concat("/pets")),
+                    "POST",
+                    HttpRequest.BodyPublishers.ofString(json.toString()),
+                    "application/json");
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             int statusCode = response.statusCode();
             String responseBody = response.body();
             if (statusCode == 200) {
@@ -114,13 +111,12 @@ public class AdopetConsoleApplication {
         System.out.println("Digite o id ou nome do abrigo:");
         String idOuNome = new Scanner(System.in).nextLine();
 
-        HttpClient client = HttpClient.newHttpClient();
-        String uri = "http://localhost:8080/abrigos/" +idOuNome +"/pets";
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(uri))
-                .method("GET", HttpRequest.BodyPublishers.noBody())
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = getHttpResponse(
+                "/".concat(idOuNome.concat("/pets")),
+                "GET",
+                HttpRequest.BodyPublishers.noBody(),
+                "");
+
         int statusCode = response.statusCode();
         if (statusCode == 404 || statusCode == 500) {
             System.out.println("ID ou nome não cadastrado!");
@@ -141,7 +137,7 @@ public class AdopetConsoleApplication {
         return false;
     }
 
-    private static void cadastrarNovoAbrigo() throws IOException, InterruptedException {
+    private static void cadastarNovoAbrigo() throws IOException, InterruptedException {
         System.out.println("Digite o nome do abrigo:");
         String nome = new Scanner(System.in).nextLine();
         System.out.println("Digite o telefone do abrigo:");
@@ -154,15 +150,12 @@ public class AdopetConsoleApplication {
         json.addProperty("telefone", telefone);
         json.addProperty("email", email);
 
-        HttpClient client = HttpClient.newHttpClient();
-        String uri = "http://localhost:8080/abrigos";
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(uri))
-                .header("Content-Type", "application/json")
-                .method("POST", HttpRequest.BodyPublishers.ofString(json.toString()))
-                .build();
+        HttpResponse<String> response = getHttpResponse(
+                "",
+                "POST",
+                HttpRequest.BodyPublishers.ofString(json.toString()),
+                "application/json");
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         int statusCode = response.statusCode();
         String responseBody = response.body();
         if (statusCode == 200) {
@@ -175,13 +168,8 @@ public class AdopetConsoleApplication {
     }
 
     private static void listarAbrigosCadastrados() throws IOException, InterruptedException {
-        HttpClient client = HttpClient.newHttpClient();
-        String uri = "http://localhost:8080/abrigos";
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(uri))
-                .method("GET", HttpRequest.BodyPublishers.noBody())
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = getHttpResponse("", "GET", HttpRequest.BodyPublishers.noBody(), "");
+
         String responseBody = response.body();
         JsonArray jsonArray = JsonParser.parseString(responseBody).getAsJsonArray();
         System.out.println("Abrigos cadastrados:");
@@ -191,5 +179,21 @@ public class AdopetConsoleApplication {
             String nome = jsonObject.get("nome").getAsString();
             System.out.println(id +" - " +nome);
         }
+    }
+
+    private static HttpResponse<String> getHttpResponse(String diretorioURL, String typeRequest, HttpRequest.BodyPublisher bodyRequest, String header)
+            throws IOException, InterruptedException {
+
+        String host = "http://localhost:8080/abrigos";
+
+        HttpClient client = HttpClient.newHttpClient();
+
+        HttpRequest.Builder request = HttpRequest.newBuilder()
+                .uri(URI.create(host.concat(diretorioURL)))
+                .method(typeRequest.toUpperCase(), bodyRequest);
+
+        if(!header.isEmpty()) request.header("Content-Type", header);
+
+        return client.send(request.build(), HttpResponse.BodyHandlers.ofString());
     }
 }
