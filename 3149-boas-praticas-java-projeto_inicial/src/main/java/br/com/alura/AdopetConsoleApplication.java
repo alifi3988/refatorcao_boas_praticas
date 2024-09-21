@@ -10,37 +10,48 @@ public class AdopetConsoleApplication {
     public static void main(String[] args) {
 
         System.out.println("##### BOAS VINDAS AO SISTEMA ADOPET CONSOLE #####");
+
         try {
             int opcaoEscolhida = 0;
-            while (opcaoEscolhida != 5) {
-                System.out.println("\nDIGITE O NÚMERO DA OPERAÇÃO DESEJADA:");
-                System.out.println("1 -> Listar abrigos cadastrados");
-                System.out.println("2 -> Cadastrar novo abrigo");
-                System.out.println("3 -> Listar pets do abrigo");
-                System.out.println("4 -> Importar pets do abrigo");
-                System.out.println("5 -> Sair");
+            while (true) {
 
-                String textoDigitado = new Scanner(System.in).nextLine();
-                opcaoEscolhida = Integer.parseInt(textoDigitado);
+                opcaoEscolhida = mensagemMenuInicial();
 
-                if (opcaoEscolhida == 1) {
-                    AbrigoService.listarAbrigosCadastrados();
-                } else if (opcaoEscolhida == 2) {
-                    AbrigoService.cadastarNovoAbrigo();
-                } else if (opcaoEscolhida == 3) {
-                    if (PetsService.listarPetsDoAbrigo()) continue;
-                } else if (opcaoEscolhida == 4) {
-                    if (PetsService.importarPetsDoAbrigo()) continue;
-                } else if (opcaoEscolhida == 5) {
-                    break;
-                } else {
-                    System.out.println("NÚMERO INVÁLIDO!");
-                    opcaoEscolhida = 0;
+                switch (opcaoEscolhida) {
+                    case 1:
+                        AbrigoService.listarAbrigosCadastrados();
+                        break;
+                    case 2:
+                        AbrigoService.cadastarNovoAbrigo();
+                        break;
+                    case 3:
+                        PetsService.listarPetsDoAbrigo();
+                        break;
+                    case 4:
+                        PetsService.importarPetsDoAbrigo();
+                        break;
+                    case 5:
+                        System.out.println("Finalizando o programa...");
+                        return;
+                    default:
+                        System.out.println("NÚMERO INVÁLIDO!");
+                        break;
                 }
             }
-            System.out.println("Finalizando o programa...");
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Erro: " + e.getMessage());
         }
+    }
+
+    private static int mensagemMenuInicial() {
+        System.out.println("\nDIGITE O NÚMERO DA OPERAÇÃO DESEJADA:");
+        System.out.println("1 -> Listar abrigos cadastrados");
+        System.out.println("2 -> Cadastrar novo abrigo");
+        System.out.println("3 -> Listar pets do abrigo");
+        System.out.println("4 -> Importar pets do abrigo");
+        System.out.println("5 -> Sair");
+        String textoDigitado = new Scanner(System.in).nextLine();
+
+        return Integer.parseInt(textoDigitado);
     }
 }
