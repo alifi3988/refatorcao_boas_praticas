@@ -4,6 +4,7 @@ import br.com.alura.service.AbrigoService;
 import br.com.alura.service.PetsService;
 
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 public class AdopetConsoleApplication {
 
@@ -12,10 +13,10 @@ public class AdopetConsoleApplication {
         System.out.println("##### BOAS VINDAS AO SISTEMA ADOPET CONSOLE #####");
 
         try {
-            int opcaoEscolhida = 0;
+
             while (true) {
 
-                opcaoEscolhida = mensagemMenuInicial();
+                int opcaoEscolhida = mensagemMenuInicial();
 
                 switch (opcaoEscolhida) {
                     case 1:
@@ -44,14 +45,23 @@ public class AdopetConsoleApplication {
     }
 
     private static int mensagemMenuInicial() {
-        System.out.println("\nDIGITE O NÚMERO DA OPERAÇÃO DESEJADA:");
-        System.out.println("1 -> Listar abrigos cadastrados");
-        System.out.println("2 -> Cadastrar novo abrigo");
-        System.out.println("3 -> Listar pets do abrigo");
-        System.out.println("4 -> Importar pets do abrigo");
-        System.out.println("5 -> Sair");
-        String textoDigitado = new Scanner(System.in).nextLine();
+        int opcaoEscolhida;
+        while (true) {
+            try {
+                System.out.println("\nDIGITE O NÚMERO DA OPERAÇÃO DESEJADA:");
+                System.out.println("1 -> Listar abrigos cadastrados");
+                System.out.println("2 -> Cadastrar novo abrigo");
+                System.out.println("3 -> Listar pets do abrigo");
+                System.out.println("4 -> Importar pets do abrigo");
+                System.out.println("5 -> Sair");
+                System.out.print("R: ");
+                opcaoEscolhida = Integer.parseInt(new Scanner(System.in).nextLine());
+                break;
+            } catch (Exception e) {
+                System.out.println("Erro [MENU]: " + e.getMessage() + ". Por favor, informe um número válido entre 1 e 5. \nTente novamente!");
+            }
+        }
 
-        return Integer.parseInt(textoDigitado);
+        return opcaoEscolhida;
     }
 }
