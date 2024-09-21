@@ -1,6 +1,9 @@
 package br.com.alura.service;
 
 import br.com.alura.client.HttpRequestClient;
+import br.com.alura.model.Pet;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -11,11 +14,16 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class PetsService {
 
     public static boolean importarPetsDoAbrigo() throws IOException, InterruptedException {
+
+        Pet pet = new Pet();
+
         System.out.println("Digite o id ou nome do abrigo:");
         String idOuNome = new Scanner(System.in).nextLine();
 
@@ -26,47 +34,44 @@ public class PetsService {
         try {
             reader = new BufferedReader(new FileReader(nomeArquivo));
         } catch (IOException e) {
-            System.out.println("Erro ao carregar o arquivo: " +nomeArquivo);
+            System.out.println("Erro ao carregar o arquivo: " + nomeArquivo);
             return true;
         }
-        String line;
-        while ((line = reader.readLine()) != null) {
-            String[] campos = line.split(",");
-            String tipo = campos[0];
-            String nome = campos[1];
-            String raca = campos[2];
-            int idade = Integer.parseInt(campos[3]);
-            String cor = campos[4];
-            Float peso = Float.parseFloat(campos[5]);
 
-            JsonObject json = new JsonObject();
-            json.addProperty("tipo", tipo.toUpperCase());
-            json.addProperty("nome", nome);
-            json.addProperty("raca", raca);
-            json.addProperty("idade", idade);
-            json.addProperty("cor", cor);
-            json.addProperty("peso", peso);
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+
+            String[] campos = line.split(",");
+            pet.setTipo(campos[0].toUpperCase());
+            pet.setNome(campos[1]);
+            pet.setRaca(campos[2]);
+            pet.setIdade(Integer.parseInt(campos[3]));
+            pet.setCor(campos[4]);
+            pet.setPeso(Float.parseFloat(campos[5]));
+            String jsonPet = new Gson().toJson(pet);
 
             HttpResponse<String> response = HttpRequestClient.getHttRequest(
                     "/".concat(idOuNome.concat("/pets")),
                     "POST",
-                    HttpRequest.BodyPublishers.ofString(json.toString()),
+                    HttpRequest.BodyPublishers.ofString(jsonPet),
                     "application/json");
 
             int statusCode = response.statusCode();
             String responseBody = response.body();
             if (statusCode == 200) {
-                System.out.println("Pet cadastrado com sucesso: " + nome);
+                System.out.println("Pet cadastrado com sucesso: " + pet.getNome());
             } else if (statusCode == 404) {
                 System.out.println("Id ou nome do abrigo não encontado!");
                 break;
             } else if (statusCode == 400 || statusCode == 500) {
-                System.out.println("Erro ao cadastrar o pet: " + nome);
+                System.out.println("Erro ao cadastrar o pet: " + pet.getNome());
                 System.out.println(responseBody);
                 break;
             }
         }
         reader.close();
+
         return false;
     }
 
@@ -85,17 +90,16 @@ public class PetsService {
             System.out.println("ID ou nome não cadastrado!");
             return true;
         }
-        String responseBody = response.body();
-        JsonArray jsonArray = JsonParser.parseString(responseBody).getAsJsonArray();
+
+        List<Pet> petsList = Arrays.stream(new ObjectMapper().readValue(response.body(), Pet[].class)).toList();
+
         System.out.println("Pets cadastrados:");
-        for (JsonElement element : jsonArray) {
-            JsonObject jsonObject = element.getAsJsonObject();
-            long id = jsonObject.get("id").getAsLong();
-            String tipo = jsonObject.get("tipo").getAsString();
-            String nome = jsonObject.get("nome").getAsString();
-            String raca = jsonObject.get("raca").getAsString();
-            int idade = jsonObject.get("idade").getAsInt();
-            System.out.println(id +" - " +tipo +" - " +nome +" - " +raca +" - " +idade +" ano(s)");
+        for (Pet pet : petsList) {
+            System.out.println(pet.getId() + " - " +
+                    pet.getTipo() + " - " +
+                    pet.getNome() + " - " +
+                    pet.getRaca() + " - " +
+                    pet.getId() + " ano(s)");
         }
         return false;
     }
