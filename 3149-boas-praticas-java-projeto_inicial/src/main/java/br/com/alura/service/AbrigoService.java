@@ -1,35 +1,34 @@
 package br.com.alura.service;
 
 import br.com.alura.client.HttpRequestClient;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import br.com.alura.model.Abrigo;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 public class AbrigoService {
 
     public static void cadastarNovoAbrigo() throws IOException, InterruptedException {
-        System.out.println("Digite o nome do abrigo:");
-        String nome = new Scanner(System.in).nextLine();
-        System.out.println("Digite o telefone do abrigo:");
-        String telefone = new Scanner(System.in).nextLine();
-        System.out.println("Digite o email do abrigo:");
-        String email = new Scanner(System.in).nextLine();
 
-        JsonObject json = new JsonObject();
-        json.addProperty("nome", nome);
-        json.addProperty("telefone", telefone);
-        json.addProperty("email", email);
+        Abrigo abrigo = new Abrigo();
+
+        System.out.println("Digite o nome do abrigo:");
+        abrigo.setNome(new Scanner(System.in).nextLine());
+        System.out.println("Digite o telefone do abrigo:");
+        abrigo.setTelefone(new Scanner(System.in).nextLine());
+        System.out.println("Digite o email do abrigo:");
+        abrigo.setEmail(new Scanner(System.in).nextLine());
 
         HttpResponse<String> response = HttpRequestClient.getHttRequest(
                 "",
                 "POST",
-                HttpRequest.BodyPublishers.ofString(json.toString()),
+                HttpRequest.BodyPublishers.ofString(new Gson().toJson(abrigo)),
                 "application/json");
 
         int statusCode = response.statusCode();
@@ -45,16 +44,18 @@ public class AbrigoService {
 
     public static void listarAbrigosCadastrados() throws IOException, InterruptedException {
 
-        HttpResponse<String> response = HttpRequestClient.getHttRequest("", "GET", HttpRequest.BodyPublishers.noBody(), "");
-
-        String responseBody = response.body();
-        JsonArray jsonArray = JsonParser.parseString(responseBody).getAsJsonArray();
+        HttpResponse<String> response = HttpRequestClient.getHttRequest(
+                "",
+                "GET",
+                HttpRequest.BodyPublishers.noBody(),
+                "");
         System.out.println("Abrigos cadastrados:");
-        for (JsonElement element : jsonArray) {
-            JsonObject jsonObject = element.getAsJsonObject();
-            long id = jsonObject.get("id").getAsLong();
-            String nome = jsonObject.get("nome").getAsString();
-            System.out.println(id +" - " +nome);
+
+        List<Abrigo> listAbrigo = Arrays.stream(
+                new ObjectMapper().readValue(response.body(), Abrigo[].class)).toList();
+
+        for (Abrigo abrigo : listAbrigo) {
+            System.out.println(abrigo.getId() + " - " + abrigo.getNome());
         }
     }
 }
