@@ -4,43 +4,64 @@ import br.com.alura.service.AbrigoService;
 import br.com.alura.service.PetsService;
 
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 public class AdopetConsoleApplication {
 
     public static void main(String[] args) {
 
         System.out.println("##### BOAS VINDAS AO SISTEMA ADOPET CONSOLE #####");
+
         try {
-            int opcaoEscolhida = 0;
-            while (opcaoEscolhida != 5) {
+
+            while (true) {
+
+                int opcaoEscolhida = mensagemMenuInicial();
+
+                switch (opcaoEscolhida) {
+                    case 1:
+                        AbrigoService.listarAbrigosCadastrados();
+                        break;
+                    case 2:
+                        AbrigoService.cadastarNovoAbrigo();
+                        break;
+                    case 3:
+                        PetsService.listarPetsDoAbrigo();
+                        break;
+                    case 4:
+                        PetsService.importarPetsDoAbrigo();
+                        break;
+                    case 5:
+                        System.out.println("Finalizando o programa...");
+                        return;
+                    default:
+                        System.out.println("NÚMERO INVÁLIDO!");
+                        break;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Erro: " + e.getMessage());
+        }
+    }
+
+    private static int mensagemMenuInicial() {
+        int opcaoEscolhida;
+        while (true) {
+            try {
                 System.out.println("\nDIGITE O NÚMERO DA OPERAÇÃO DESEJADA:");
                 System.out.println("1 -> Listar abrigos cadastrados");
                 System.out.println("2 -> Cadastrar novo abrigo");
                 System.out.println("3 -> Listar pets do abrigo");
                 System.out.println("4 -> Importar pets do abrigo");
                 System.out.println("5 -> Sair");
-
-                String textoDigitado = new Scanner(System.in).nextLine();
-                opcaoEscolhida = Integer.parseInt(textoDigitado);
-
-                if (opcaoEscolhida == 1) {
-                    AbrigoService.listarAbrigosCadastrados();
-                } else if (opcaoEscolhida == 2) {
-                    AbrigoService.cadastarNovoAbrigo();
-                } else if (opcaoEscolhida == 3) {
-                    if (PetsService.listarPetsDoAbrigo()) continue;
-                } else if (opcaoEscolhida == 4) {
-                    if (PetsService.importarPetsDoAbrigo()) continue;
-                } else if (opcaoEscolhida == 5) {
-                    break;
-                } else {
-                    System.out.println("NÚMERO INVÁLIDO!");
-                    opcaoEscolhida = 0;
-                }
+                System.out.print("R: ");
+                opcaoEscolhida = Integer.parseInt(new Scanner(System.in).nextLine());
+                break;
+            } catch (Exception e) {
+                System.out.println("Erro [MENU]: " + e.getMessage() + ". Por favor, informe um número válido entre 1 e 5. \nTente novamente!");
             }
-            System.out.println("Finalizando o programa...");
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
+        return opcaoEscolhida;
     }
 }
