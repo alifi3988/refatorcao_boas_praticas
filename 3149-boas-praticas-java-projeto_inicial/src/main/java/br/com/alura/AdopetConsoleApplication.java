@@ -4,7 +4,6 @@ import br.com.alura.service.AbrigoService;
 import br.com.alura.service.PetsService;
 
 import java.util.Scanner;
-import java.util.logging.Logger;
 
 public class AdopetConsoleApplication {
 
