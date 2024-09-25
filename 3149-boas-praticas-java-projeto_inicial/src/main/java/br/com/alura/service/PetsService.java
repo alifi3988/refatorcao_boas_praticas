@@ -3,7 +3,6 @@ package br.com.alura.service;
 import br.com.alura.client.HttpRequestClient;
 import br.com.alura.model.Pet;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -14,9 +13,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+import static br.com.alura.client.HttpRequestClient.cadastrarPet;
+import static br.com.alura.client.HttpRequestClient.listarPets;
+
 public class PetsService {
 
-    public static boolean importarPetsDoAbrigo() throws IOException, InterruptedException {
+    public static void importarPetsDoAbrigo() throws IOException, InterruptedException {
 
         Pet pet = new Pet();
 
@@ -31,7 +33,7 @@ public class PetsService {
             reader = new BufferedReader(new FileReader(nomeArquivo));
         } catch (IOException e) {
             System.out.println("Erro ao carregar o arquivo: " + nomeArquivo);
-            return true;
+            return;
         }
 
         String line;
@@ -45,13 +47,8 @@ public class PetsService {
             pet.setIdade(Integer.parseInt(campos[3]));
             pet.setCor(campos[4]);
             pet.setPeso(Float.parseFloat(campos[5]));
-            String jsonPet = new Gson().toJson(pet);
 
-            HttpResponse<String> response = HttpRequestClient.getHttRequest(
-                    "/".concat(idOuNome.concat("/pets")),
-                    "POST",
-                    HttpRequest.BodyPublishers.ofString(jsonPet),
-                    "application/json");
+            HttpResponse<String> response = cadastrarPet(idOuNome, pet);
 
             int statusCode = response.statusCode();
             String responseBody = response.body();
@@ -68,23 +65,18 @@ public class PetsService {
         }
         reader.close();
 
-        return false;
     }
 
-    public static boolean listarPetsDoAbrigo() throws IOException, InterruptedException {
+    public static void listarPetsDoAbrigo() throws IOException, InterruptedException {
         System.out.println("Digite o id ou nome do abrigo:");
         String idOuNome = new Scanner(System.in).nextLine();
 
-        HttpResponse<String> response = HttpRequestClient.getHttRequest(
-                "/".concat(idOuNome.concat("/pets")),
-                "GET",
-                HttpRequest.BodyPublishers.noBody(),
-                "");
+        HttpResponse<String> response = listarPets(idOuNome);
 
         int statusCode = response.statusCode();
         if (statusCode == 404 || statusCode == 500) {
             System.out.println("ID ou nome não cadastrado!");
-            return true;
+            return;
         }
 
         List<Pet> petsList = Arrays.stream(new ObjectMapper().readValue(response.body(), Pet[].class)).toList();
@@ -97,7 +89,6 @@ public class PetsService {
                     pet.getRaca() + " - " +
                     pet.getId() + " ano(s)");
         }
-        return false;
     }
 
 }

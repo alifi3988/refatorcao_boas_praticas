@@ -1,16 +1,17 @@
 package br.com.alura.service;
 
-import br.com.alura.client.HttpRequestClient;
 import br.com.alura.model.Abrigo;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 
 import java.io.IOException;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+
+import static br.com.alura.client.HttpRequestClient.cadastrarAbrigo;
+import static br.com.alura.client.HttpRequestClient.listarAbrigosRegistrados;
+
 
 public class AbrigoService {
 
@@ -25,11 +26,7 @@ public class AbrigoService {
         System.out.println("Digite o email do abrigo:");
         abrigo.setEmail(new Scanner(System.in).nextLine());
 
-        HttpResponse<String> response = HttpRequestClient.getHttRequest(
-                "",
-                "POST",
-                HttpRequest.BodyPublishers.ofString(new Gson().toJson(abrigo)),
-                "application/json");
+        HttpResponse<String> response = cadastrarAbrigo(abrigo);
 
         int statusCode = response.statusCode();
         String responseBody = response.body();
@@ -44,11 +41,7 @@ public class AbrigoService {
 
     public static void listarAbrigosCadastrados() throws IOException, InterruptedException {
 
-        HttpResponse<String> response = HttpRequestClient.getHttRequest(
-                "",
-                "GET",
-                HttpRequest.BodyPublishers.noBody(),
-                "");
+        HttpResponse<String> response = listarAbrigosRegistrados();
         System.out.println("Abrigos cadastrados:");
 
         List<Abrigo> listAbrigo = Arrays.stream(
