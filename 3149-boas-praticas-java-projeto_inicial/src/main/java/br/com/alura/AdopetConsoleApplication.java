@@ -1,11 +1,15 @@
 package br.com.alura;
 
+import br.com.alura.client.ClientAbrigos;
 import br.com.alura.service.AbrigoService;
 import br.com.alura.service.PetsService;
 
 import java.util.Scanner;
 
 public class AdopetConsoleApplication {
+
+    static ClientAbrigos clientAbrigos = new ClientAbrigos();
+    static AbrigoService abrigo = new AbrigoService(clientAbrigos);
 
     public static void main(String[] args) {
 
@@ -19,10 +23,10 @@ public class AdopetConsoleApplication {
 
                 switch (opcaoEscolhida) {
                     case 1:
-                        AbrigoService.listarAbrigosCadastrados();
+                        abrigo.listarAbrigosCadastrados();
                         break;
                     case 2:
-                        AbrigoService.cadastarNovoAbrigo();
+                        abrigo.cadastarNovoAbrigo();
                         break;
                     case 3:
                         PetsService.listarPetsDoAbrigo();
