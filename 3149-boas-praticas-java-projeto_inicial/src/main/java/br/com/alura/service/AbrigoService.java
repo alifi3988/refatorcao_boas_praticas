@@ -63,9 +63,9 @@ public class AbrigoService {
         }
     }
 
-    private static void mostrarAbrigosCadastrados(List<Abrigo> listAbrigos) {
+    private static void mostrarAbrigosCadastrados(List<Abrigo> listAbrigo) {
         System.out.println("Abrigos cadastrados:");
-        listAbrigos.forEach(abrigo -> {
+        listAbrigo.forEach(abrigo -> {
             System.out.println(abrigo.getId() + " - " + abrigo.getNome());
         });
     }
