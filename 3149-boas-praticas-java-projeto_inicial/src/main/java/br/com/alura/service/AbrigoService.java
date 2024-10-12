@@ -13,6 +13,9 @@ import java.util.Scanner;
 public class AbrigoService {
 
     private static ClientAbrigos client;
+    private static int RESPONSE_NUMBER_SUCCESS_200 = 200;
+    private static int RESPONSE_NUMBER_ERROR_400 = 400;
+    private static int RESPONSE_NUMBER_ERROR_500 = 500;
 
     public AbrigoService(ClientAbrigos client) {
         this.client = client;
@@ -33,10 +36,10 @@ public class AbrigoService {
 
         int statusCode = response.statusCode();
         String responseBody = response.body();
-        if (statusCode == 200) {
+        if (statusCode == RESPONSE_NUMBER_SUCCESS_200) {
             System.out.println("Abrigo cadastrado com sucesso!");
             System.out.println(responseBody);
-        } else if (statusCode == 400 || statusCode == 500) {
+        } else if (statusCode == RESPONSE_NUMBER_ERROR_400 || statusCode == RESPONSE_NUMBER_ERROR_500) {
             System.out.println("Erro ao cadastrar o abrigo:");
             System.out.println(responseBody);
         }
@@ -46,18 +49,24 @@ public class AbrigoService {
         try {
             HttpResponse<String> response = client.getAbrigos();
 
-            System.out.println("Abrigos cadastrados:");
-
             List<Abrigo> listAbrigo = Arrays.stream(
                     new ObjectMapper().readValue(response.body(), Abrigo[].class)).toList();
 
-            if (listAbrigo.isEmpty()) System.out.println("LISTA DE ABRIGO VAZIA.");;
-
-            for (Abrigo abrigo : listAbrigo) {
-                System.out.println(abrigo.getId() + " - " + abrigo.getNome());
+            if (listAbrigo.isEmpty()) {
+                System.out.println("Não foi encontrado nenhum Abrigo cadastrado.");
             }
+
+            mostrarAbrigosCadastrados(listAbrigo);
+
         }catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
+    }
+
+    private static void mostrarAbrigosCadastrados(List<Abrigo> listAbrigo) {
+        System.out.println("Abrigos cadastrados:");
+        listAbrigo.forEach(abrigo -> {
+            System.out.println(abrigo.getId() + " - " + abrigo.getNome());
+        });
     }
 }
