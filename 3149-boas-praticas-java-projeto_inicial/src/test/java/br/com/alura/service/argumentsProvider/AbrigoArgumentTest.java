@@ -2,7 +2,7 @@ package br.com.alura.service.argumentsProvider;
 
 import br.com.alura.model.Abrigo;
 
-public class AbrigoArgumentSource {
+public class AbrigoArgumentTest {
 
     public static Abrigo getPayloadAbrigo(){
         Abrigo abrigo = new Abrigo();
