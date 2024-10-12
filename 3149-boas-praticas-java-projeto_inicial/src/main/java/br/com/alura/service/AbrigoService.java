@@ -1,9 +1,7 @@
 package br.com.alura.service;
 
-import br.com.alura.client.HttpRequestClient;
 import br.com.alura.client.ClientAbrigos;
 import br.com.alura.model.Abrigo;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -11,8 +9,6 @@ import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-
-import static java.util.stream.Collectors.toList;
 
 public class AbrigoService {
 
