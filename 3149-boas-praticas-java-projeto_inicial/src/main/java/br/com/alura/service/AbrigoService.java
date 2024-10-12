@@ -1,5 +1,6 @@
 package br.com.alura.service;
 
+import br.com.alura.client.ClientAbrigos;
 import br.com.alura.model.Abrigo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -9,11 +10,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-import static br.com.alura.client.HttpRequestClient.cadastrarAbrigo;
-import static br.com.alura.client.HttpRequestClient.listarAbrigosRegistrados;
-
-
 public class AbrigoService {
+
+    private static ClientAbrigos client;
+
+    public AbrigoService(ClientAbrigos client) {
+        this.client = client;
+    }
 
     public static void cadastarNovoAbrigo() throws IOException, InterruptedException {
 
@@ -26,7 +29,7 @@ public class AbrigoService {
         System.out.println("Digite o email do abrigo:");
         abrigo.setEmail(new Scanner(System.in).nextLine());
 
-        HttpResponse<String> response = cadastrarAbrigo(abrigo);
+        HttpResponse<String> response = client.registerAbrigo(abrigo);
 
         int statusCode = response.statusCode();
         String responseBody = response.body();
@@ -40,15 +43,21 @@ public class AbrigoService {
     }
 
     public static void listarAbrigosCadastrados() throws IOException, InterruptedException {
+        try {
+            HttpResponse<String> response = client.getAbrigos();
 
-        HttpResponse<String> response = listarAbrigosRegistrados();
-        System.out.println("Abrigos cadastrados:");
+            System.out.println("Abrigos cadastrados:");
 
-        List<Abrigo> listAbrigo = Arrays.stream(
-                new ObjectMapper().readValue(response.body(), Abrigo[].class)).toList();
+            List<Abrigo> listAbrigo = Arrays.stream(
+                    new ObjectMapper().readValue(response.body(), Abrigo[].class)).toList();
 
-        for (Abrigo abrigo : listAbrigo) {
-            System.out.println(abrigo.getId() + " - " + abrigo.getNome());
+            if (listAbrigo.isEmpty()) System.out.println("LISTA DE ABRIGO VAZIA.");;
+
+            for (Abrigo abrigo : listAbrigo) {
+                System.out.println(abrigo.getId() + " - " + abrigo.getNome());
+            }
+        }catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 }
