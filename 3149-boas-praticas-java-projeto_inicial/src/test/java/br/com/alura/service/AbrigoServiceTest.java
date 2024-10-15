@@ -28,6 +28,7 @@ public class AbrigoServiceTest {
         String expectedAbrigosCadastrados = "Abrigos cadastrados:";
         String expectedIdNome = "0 - Abrigo Teste";
 
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(baos);
         System.setOut(printStream);
@@ -44,5 +45,24 @@ public class AbrigoServiceTest {
 
         Assert.assertEquals(expectedAbrigosCadastrados, actualAbrigosCadastrados);
         Assert.assertEquals(expectedIdNome, aactualIdNome);
+    }
+
+    @Test
+    public void should_not_get_abrigos_registry_when_is_empty() throws IOException, InterruptedException {
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(baos);
+        System.setOut(printStream);
+
+        when(response.body()).thenReturn("[]");
+        when(client.getAbrigos()).thenReturn(response);
+
+        service.listarAbrigosCadastrados();
+
+        String[] lines = baos.toString().split(System.lineSeparator());
+        System.out.println(Arrays.stream(lines).toList());
+        String actualAbrigosCadastrados = lines[0];
+
+        Assert.assertEquals("Não foi encontrado nenhum Abrigo cadastrado.", actualAbrigosCadastrados);
     }
 }
