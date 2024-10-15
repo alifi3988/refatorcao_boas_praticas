@@ -28,6 +28,7 @@ public class AbrigoServiceTest {
         String expectedAbrigosCadastrados = "Abrigos cadastrados:";
         String expectedIdNome = "0 - Abrigo Teste";
 
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(baos);
         System.setOut(printStream);

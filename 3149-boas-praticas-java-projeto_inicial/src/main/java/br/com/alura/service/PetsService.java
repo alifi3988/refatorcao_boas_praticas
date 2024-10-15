@@ -1,22 +1,24 @@
 package br.com.alura.service;
 
-import br.com.alura.client.HttpRequestClient;
+import br.com.alura.client.ClientPet;
 import br.com.alura.model.Pet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-import static br.com.alura.client.HttpRequestClient.cadastrarPet;
-import static br.com.alura.client.HttpRequestClient.listarPets;
-
 public class PetsService {
+
+    private static ClientPet client;
+
+    public PetsService(ClientPet client) {
+        this.client = client;
+    }
 
     public static void importarPetsDoAbrigo() throws IOException, InterruptedException {
 
@@ -48,7 +50,7 @@ public class PetsService {
             pet.setCor(campos[4]);
             pet.setPeso(Float.parseFloat(campos[5]));
 
-            HttpResponse<String> response = cadastrarPet(idOuNome, pet);
+            HttpResponse<String> response = client.cadastrarPet(idOuNome, pet);
 
             int statusCode = response.statusCode();
             String responseBody = response.body();
@@ -71,7 +73,7 @@ public class PetsService {
         System.out.println("Digite o id ou nome do abrigo:");
         String idOuNome = new Scanner(System.in).nextLine();
 
-        HttpResponse<String> response = listarPets(idOuNome);
+        HttpResponse<String> response = client.listarPets(idOuNome);
 
         int statusCode = response.statusCode();
         if (statusCode == 404 || statusCode == 500) {
