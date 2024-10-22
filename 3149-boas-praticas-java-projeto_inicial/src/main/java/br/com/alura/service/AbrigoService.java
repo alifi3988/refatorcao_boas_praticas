@@ -54,6 +54,7 @@ public class AbrigoService {
 
             if (listAbrigo.isEmpty()) {
                 System.out.println("Não foi encontrado nenhum Abrigo cadastrado.");
+                return;
             }
 
             mostrarAbrigosCadastrados(listAbrigo);
