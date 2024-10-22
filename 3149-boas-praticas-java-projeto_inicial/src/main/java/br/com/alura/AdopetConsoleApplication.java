@@ -1,16 +1,15 @@
 package br.com.alura;
 
-import br.com.alura.command.CadastrarAbrigosCommand;
-import br.com.alura.command.CommandExecute;
-import br.com.alura.command.ImportarPetsDoAbrigoCommand;
-import br.com.alura.command.ListarAbrigosCommand;
-import br.com.alura.command.ListarPetsDoAbrigoCommand;
+import br.com.alura.client.ClientAbrigos;
+import br.com.alura.service.AbrigoService;
+import br.com.alura.service.PetsService;
 
 import java.util.Scanner;
 
 public class AdopetConsoleApplication {
 
-    private final static CommandExecute execute = new CommandExecute();
+    static ClientAbrigos clientAbrigos = new ClientAbrigos();
+    static AbrigoService abrigo = new AbrigoService(clientAbrigos);
 
     public static void main(String[] args) {
 
@@ -24,16 +23,16 @@ public class AdopetConsoleApplication {
 
                 switch (opcaoEscolhida) {
                     case 1:
-                        execute.executeCommand(new ListarAbrigosCommand());
+                        abrigo.listarAbrigosCadastrados();
                         break;
                     case 2:
-                        execute.executeCommand(new CadastrarAbrigosCommand());
+                        abrigo.cadastarNovoAbrigo();
                         break;
                     case 3:
-                        execute.executeCommand(new ListarPetsDoAbrigoCommand());
+                        PetsService.listarPetsDoAbrigo();
                         break;
                     case 4:
-                        execute.executeCommand(new ImportarPetsDoAbrigoCommand());
+                        PetsService.importarPetsDoAbrigo();
                         break;
                     case 5:
                         System.out.println("Finalizando o programa...");
