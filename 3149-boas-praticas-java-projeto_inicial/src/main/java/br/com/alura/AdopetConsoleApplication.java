@@ -5,7 +5,6 @@ import br.com.alura.command.CommandExecute;
 import br.com.alura.command.ImportarPetsDoAbrigoCommand;
 import br.com.alura.command.ListarAbrigosCommand;
 import br.com.alura.command.ListarPetsDoAbrigoCommand;
-import br.com.alura.service.PetsService;
 
 import java.util.Scanner;
 
